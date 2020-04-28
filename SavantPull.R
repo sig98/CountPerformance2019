@@ -1,3 +1,4 @@
+#This script to pull Baseball Savant data was written by Robert Frey, his video on how to do this is here: https://www.youtube.com/watch?v=swJr4u-HYr0&t=400s
 install.packages('devtools')
 library(devtools)
 install_github("BillPetti/baseballr")
