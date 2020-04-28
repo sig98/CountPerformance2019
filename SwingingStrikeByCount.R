@@ -1,17 +1,16 @@
 #install.packages('tidyverse')
 library(tidyverse)
 #install.packages('dplyr')
+library(tidyr)
 library(dplyr)
 
 SavantData <- read.csv('SavantHittingData19.csv', stringsAsFactors = F)
 SavantData$count <- paste(SavantData$balls, SavantData$strikes, sep = "-")
-
-descriptionlist <- unique(SavantData$description)
+PlayerList <- read.csv('PlayerList.csv', stringsAsFactors = F)
 
 TwoStrikes <- filter(SavantData, strikes == '2')
-TwoStrikes %>% group_by(player_name)
-Sample2 <- TwoStrikes %>% sample_n(10)
-View(Sample2)
+Sample2 <- TwoStrikes %>% 
+  sample_n(10)
 
 ZeroZero <- filter(SavantData, count == "0-0")
 ZeroOne <- filter(SavantData, count == "0-1")
@@ -33,7 +32,6 @@ SS <- SavantData %>%
     swingingstrike = sum((description == "swinging_strike")+(description == "swinging_strike_blocked"))) %>%
   filter (pitches > min(119)) %>%
   mutate(SwStk = ((swingingstrike/pitches)*100))
-View(SS)  
 
 TwoStrikesSS <- TwoStrikes %>%
   group_by(player_name) %>%
@@ -43,7 +41,6 @@ TwoStrikesSS <- TwoStrikes %>%
     )) %>%
   filter (pitches > min(119)) %>%
   mutate(SwStk = ((swingingstrike/pitches)*100))
-View(TwoStrikesSS)  
 
 ZeroZeroSS <- ZeroZero %>%
   group_by(player_name) %>%
@@ -171,11 +168,7 @@ Join5 <- Joined11[c('player_name','SwStk00','SwStk01', 'SwStk02', 'SwStk10', 'Sw
 FinalJoin <- merge(x=Join5, y=SS, by = 'player_name', all.x = TRUE)
 Join6 <- FinalJoin[c('player_name','SwStk','SwStk00','SwStk01', 'SwStk02', 'SwStk10', 'SwStk11','SwStk12', 'SwStk21', 'SwStk22', 'SwStk20', 'SwStk31','SwStk30','SwStk32')]
 
-
 Cleaned <- Join6[rowSums(is.na(Join5[ ,2:13]))== 0,]
 FinalSwStk <- Cleaned[complete.cases(Cleaned[,2:13]),]
-View(FinalSwStk)
 
 write.csv(FinalSwStk,"SwingingStrikeCount.csv",row.names = F)
-
-
